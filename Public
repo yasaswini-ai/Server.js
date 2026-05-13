@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Bhogadi Bhagya Yasaswini</h1>
+    <h3>B.Tech CSE Student</h3>
+    <h2>My Projects</h2>
+    <div id="projectList"></div>
+    <h2>Add Project</h2>
+    <input type="text" id="title" placeholder="Project Title"><br>
+    <input type="text" id="description" placeholder="Description"><br>
+    <input type="text" id="githubLink" placeholder="GitHub Link"><br>
+    <button onclick="addProject()">Add Project</button>
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+h1 {
+    color: darkblue;
+}
+#projectList {
+    margin: 20px;
+}
+.project {
+    background: white;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+}
+// Fetch projects from backend
+async function loadProjects() {
+    const res = await fetch("/projects");
+    const projects = await res.json();
+    const projectList = document.getElementById("projectList");
+    projectList.innerHTML = "";
+    projects.forEach(project => {
+        projectList.innerHTML += `
+            <div class="project">
+                <h3>${project.title}</h3>
+                <p>${project.description}</p>
+                <a href="${project.githubLink}" target="_blank">GitHub</a>
+            </div>
+        `;
+    });
+}
+async function addProject() {
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const githubLink = document.getElementById("githubLink").value;
+    await fetch("/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, githubLink })
+    });
+   loadProjects();
+}
+// Load projects when page opens
+loadProjects();
